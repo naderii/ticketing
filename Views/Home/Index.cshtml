@@ -1,0 +1,71 @@
+﻿@page
+@model TicketingSystem.Models.HomeViewModel
+
+<div class="container mt-5">
+    <div class="text-center position-relative">
+        <!-- تیتر صفحه -->
+        <h1 class="display-4 text-primary mb-4">به سیستم تیکتینگ خوش آمدید</h1>
+
+        <!-- اضافه کردن تصویر به عنوان پس‌زمینه -->
+        <img src="~/img/Managed_Support_Top.png" alt="سیستم تیکتینگ" class="img-fluid mt-4 ticket-image" />
+
+        <!-- دکمه ایجاد تیکت روی تصویر -->
+        <a href="@Url.Action("Create", "Tickets")" class="btn btn-lg ticket-btn position-absolute">
+            <i class="fas fa-plus-circle"></i> ایجاد تیکت جدید
+        </a>
+    </div>
+</div>
+
+<style>
+    /* استایل برای دکمه */
+    .ticket-btn {
+        background: linear-gradient(45deg, #28a745, #218838); /* گرادیانت سبز */
+        color: #fff; /* متن سفید */
+        border: none; /* بدون حاشیه */
+        padding: 16px 24px;
+        font-size: 1.3rem;
+        border-radius: 12px; /* گوشه‌های گرد */
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* سایه دکمه */
+        transition: all 0.3s ease-in-out; /* انیمیشن نرم */
+        left: 50%; /* قرار دادن دکمه در مرکز افقی */
+        top: 50%; /* قرار دادن دکمه در مرکز عمودی */
+        transform: translate(-50%, -50%); /* جابجایی دکمه به مرکز دقیق */
+    }
+
+        .ticket-btn:hover {
+            background: linear-gradient(45deg, #218838, #28a745); /* تغییر گرادیانت */
+            transform: scale(1.1) translate(-50%, -50%); /* بزرگ‌تر شدن دکمه */
+            box-shadow: 0 12px 18px rgba(0, 0, 0, 0.3); /* سایه بیشتر */
+        }
+
+        .ticket-btn:focus {
+            outline: none; /* حذف حالت فوکوس پیش‌فرض */
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.8); /* سایه تمرکز */
+        }
+
+    /* استایل برای تصویر */
+    .ticket-image {
+        max-width: 100%; /* عرض تصویر به اندازه صفحه */
+        height: auto; /* حفظ نسبت تصویر */
+        border-radius: 8px; /* گوشه‌های گرد */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* سایه تصویر */
+        filter: brightness(80%); /* افکت تاریکی برای تصویر */
+    }
+
+        /* اضافه کردن افکت به تصویر هنگام هاور */
+        .ticket-image:hover {
+            filter: brightness(90%); /* روشن‌تر شدن تصویر هنگام هاور */
+        }
+
+    /* استایل برای متن‌های اصلی */
+    h1 {
+        font-weight: bold;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* سایه متن */
+    }
+
+    p {
+        margin-top: 20px;
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+</style>

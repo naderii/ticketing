@@ -1,0 +1,36 @@
+﻿@using TicketingSystem.ViewModels
+@model IEnumerable<TicketingSystem.ViewModels.UserViewModel> 
+
+@{
+    ViewData["Title"] = "مدیریت کاربران";
+}
+
+<h1>مدیریت کاربران</h1>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>نام کاربری</th>
+            <th>ایمیل</th>
+            <th>عملیات</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model) 
+        {
+            <tr>
+                <td>@user.Email</td> <!-- اصلاح برای نمایش ایمیل -->
+                <td>@user.FirstName @user.LastName</td> <!-- نمایش نام و نام خانوادگی -->
+                <td>
+                    <!-- دکمه ویرایش -->
+                    <a asp-action="EditUser" asp-route-id="@user.Id" class="btn btn-warning">ویرایش</a>
+
+                    <!-- دکمه حذف به صورت فرم -->
+                    <form asp-action="DeleteUser" asp-route-id="@user.Id" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('آیا از حذف این کاربر مطمئن هستید؟')">حذف</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

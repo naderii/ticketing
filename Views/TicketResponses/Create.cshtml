@@ -1,0 +1,56 @@
+﻿@model TicketingSystem.Models.TicketResponse
+
+@{
+    ViewData["Title"] = "افزودن پاسخ به تیکت";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-Qx00VIm+VZ0T1N57b8aMbPggMNKBA+gBt6FuXfdO0Fn1jFWeLFw2VVK0l8/kjCiL"
+      crossorigin="anonymous">
+
+<h2 class="mb-4">افزودن پاسخ به تیکت</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+
+<form asp-action="Create" method="post">
+    @Html.HiddenFor(model => model.TicketId)
+    @Html.HiddenFor(model => model.UserId)
+
+    <div class="form-group">
+        <label asp-for="ResponseText" class="font-weight-bold">متن پاسخ</label>
+        <textarea asp-for="ResponseText" class="form-control" rows="4" placeholder="پاسخ خود را اینجا وارد کنید..."></textarea>
+        <span asp-validation-for="ResponseText" class="text-danger"></span>
+    </div>
+
+    <!-- نمایش خطاهای مدل -->
+    <div class="text-danger">
+        @Html.ValidationSummary(true)
+    </div>
+
+    <div class="form-group mt-3">
+        <button type="submit" class="btn btn-success btn-lg btn-block">ارسال پاسخ</button>
+    </div>
+</form>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-w76A2a1eKo4czo1qtFxWU5rJo4Kzj1MUqE6l7lVj9DxtWrZZIrM1G9eQzRFMtbLI"
+        crossorigin="anonymous"></script>

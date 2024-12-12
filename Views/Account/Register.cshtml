@@ -1,0 +1,148 @@
+﻿@model TicketingSystem.ViewModels.RegisterViewModel
+
+@{
+    ViewData["Title"] = "ثبت‌نام";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">@ViewData["Title"]</h2>
+
+    <!-- نمایش پیام موفقیت یا خطا -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <form asp-action="Register" method="post" enctype="multipart/form-data" id="registerForm">
+        <!-- ایمیل و شماره تلفن در یک خط -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label for="Email" class="form-label">ایمیل</label>
+                <input type="email" asp-for="Email" id="Email" class="form-control" placeholder="ایمیل خود را وارد کنید" />
+                <div class="form-text text-danger">
+                    <span asp-validation-for="Email"></span>
+                </div>
+                <small class="form-text text-muted">لطفاً ایمیل خود را وارد کنید. این ایمیل برای ورود به سیستم استفاده خواهد شد.</small>
+            </div>
+
+            <div class="col-md-6">
+                <label for="Phone" class="form-label">شماره تلفن</label>
+                <input type="text" asp-for="Phone" id="Phone" class="form-control" placeholder="شماره تلفن خود را وارد کنید" />
+                <div class="form-text text-danger">
+                    <span asp-validation-for="Phone"></span>
+                </div>
+                <small class="form-text text-muted">شماره تلفن اختیاری است اما برای بازیابی حساب کاربری مفید خواهد بود.</small>
+            </div>
+        </div>
+
+        <!-- رمز عبور -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label for="Password" class="form-label">رمز عبور</label>
+                <input type="password" asp-for="Password" id="Password" class="form-control" placeholder="رمز عبور خود را وارد کنید" />
+                <div class="form-text text-danger">
+                    <span asp-validation-for="Password"></span>
+                </div>
+                <small class="form-text text-muted">رمز عبور باید حداقل ۶ کاراکتر باشد.</small>
+            </div>
+
+            <div class="col-md-6">
+                <label for="ConfirmPassword" class="form-label">تأیید رمز عبور</label>
+                <input type="password" asp-for="ConfirmPassword" id="ConfirmPassword" class="form-control" placeholder="رمز عبور را دوباره وارد کنید" />
+                <div class="form-text text-danger">
+                    <span asp-validation-for="ConfirmPassword"></span>
+                </div>
+                <small class="form-text text-muted">رمز عبور تایید باید مشابه رمز عبور اصلی شما باشد.</small>
+            </div>
+        </div>
+
+        <!-- نام و نام خانوادگی -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label for="FirstName" class="form-label">نام</label>
+                <input type="text" asp-for="FirstName" id="FirstName" class="form-control" placeholder="نام خود را وارد کنید" />
+                <div class="form-text text-danger">
+                    <span asp-validation-for="FirstName"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="LastName" class="form-label">نام خانوادگی</label>
+                <input type="text" asp-for="LastName" id="LastName" class="form-control" placeholder="نام خانوادگی خود را وارد کنید" />
+                <div class="form-text text-danger">
+                    <span asp-validation-for="LastName"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- آپلود عکس پروفایل -->
+        <div class="mb-4">
+            <label for="ProfilePicture" class="form-label">عکس پروفایل</label>
+            <input type="file" asp-for="ProfilePicture" id="ProfilePicture" class="form-control" />
+            <div class="form-text text-danger">
+                <span asp-validation-for="ProfilePicture"></span>
+            </div>
+            <small class="form-text text-muted">آپلود عکس پروفایل اختیاری است.</small>
+        </div>
+
+        <!-- دکمه ثبت‌نام -->
+        <button type="submit" class="btn btn-primary btn-sm">ثبت‌نام</button>
+    </form>
+
+    <br />
+    <div class="text-center">
+        <a href="@Url.Action("Login", "Account")">قبلاً ثبت‌نام کرده‌اید؟ وارد شوید</a>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const registerForm = document.getElementById("registerForm");
+            registerForm.addEventListener("submit", function (e) {
+                const password = document.getElementById("Password").value;
+                const confirmPassword = document.getElementById("ConfirmPassword").value;
+
+                if (password.length < 6) {
+                    e.preventDefault();
+                    alert("رمز عبور باید حداقل ۶ کاراکتر باشد.");
+                    return false;
+                }
+
+                if (password !== confirmPassword) {
+                    e.preventDefault();
+                    alert("رمز عبور و تأیید رمز عبور باید مشابه باشند.");
+                    return false;
+                }
+
+                return true;
+            });
+
+            // هایلایت فیلدها
+            const formFields = document.querySelectorAll("input");
+            formFields.forEach(function (field) {
+                field.addEventListener("focus", function () {
+                    field.classList.add("highlight");
+                });
+
+                field.addEventListener("blur", function () {
+                    field.classList.remove("highlight");
+                });
+            });
+        });
+    </script>
+    <style>
+        .highlight {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+    </style>
+}

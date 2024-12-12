@@ -1,0 +1,104 @@
+﻿@model TicketingSystem.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "ورود به سیستم";
+}
+
+<!-- Container for centering the login form -->
+<div class="container d-flex align-items-center justify-content-center vh-100">
+    <div class="col-md-6">
+        <!-- Card for the login form -->
+        <div class="card shadow-lg border-0">
+            <!-- Card Header with title -->
+            <div class="card-header text-center bg-gradient text-white py-4">
+                <h3 class="mb-0">ورود به سیستم</h3>
+            </div>
+            <!-- Card Body containing the form -->
+            <div class="card-body">
+                <form asp-action="Login" method="post" class="needs-validation" novalidate dir="ltr">
+                    @Html.AntiForgeryToken()
+
+                    <!-- Email Field -->
+                    <div class="form-group mb-4">
+                        <label asp-for="Email" class="form-label fw-bold">ایمیل</label>
+                        <input asp-for="Email" class="form-control form-control-lg" placeholder="ایمیل خود را وارد کنید" required dir="ltr" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="form-group mb-4">
+                        <label asp-for="Password" class="form-label fw-bold">رمز عبور</label>
+                        <input asp-for="Password" class="form-control form-control-lg" type="password" placeholder="رمز عبور خود را وارد کنید" required dir="ltr" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <!-- Remember Me Checkbox -->
+                    <div class="form-check mb-4">
+                        <input asp-for="RememberMe" class="form-check-input" type="checkbox" id="rememberMe" />
+                        <label class="form-check-label" for="rememberMe">مرا به خاطر بسپار</label>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="d-grid">
+                        <button type="submit" class="btn ticket-btn btn-lg">ورود</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS Styles -->
+<style>
+    /* General Styling for the body */
+    body {
+        background-color: #ffffff;
+        color: #333;
+        font-family: "Roboto", sans-serif;
+        margin: 0;
+        height: 100%;
+        box-sizing: border-box; /* Ensures padding is included in width/height calculations */
+    }
+
+    .card {
+        border-radius: 20px;
+        background: #ffffff;
+    }
+
+    .card-header {
+        background: linear-gradient(45deg, #28a745, #218838);
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        color: #fff;
+        font-size: 1.5rem;
+    }
+
+    .form-control {
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        padding: 15px;
+        font-size: 1rem;
+    }
+
+        .form-control:focus {
+            border-color: #218838;
+            box-shadow: 0 0 10px rgba(33, 136, 56, 0.5);
+        }
+
+    .ticket-btn {
+        background: linear-gradient(45deg, #28a745, #218838);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 12px 20px;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+        .ticket-btn:hover {
+            background: linear-gradient(45deg, #218838, #28a745);
+            transform: scale(1.05);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        }
+</style>

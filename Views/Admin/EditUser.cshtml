@@ -1,0 +1,47 @@
+﻿@using TicketingSystem.ViewModels
+@model TicketingSystem.ViewModels.UserViewModel
+
+<div class="container mt-4">
+    <h2 class="mb-4">ویرایش کاربر</h2>
+
+    <form asp-action="EditUser" method="post">
+        <!-- فیلد مخفی برای ID -->
+        <input type="hidden" asp-for="Id" />
+
+        <!-- ایمیل -->
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label"></label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <!-- نام -->
+        <div class="mb-3">
+            <label asp-for="FirstName" class="form-label"></label>
+            <input asp-for="FirstName" class="form-control" />
+            <span asp-validation-for="FirstName" class="text-danger"></span>
+        </div>
+
+        <!-- نام خانوادگی -->
+        <div class="mb-3">
+            <label asp-for="LastName" class="form-label"></label>
+            <input asp-for="LastName" class="form-control" />
+            <span asp-validation-for="LastName" class="text-danger"></span>
+        </div>
+
+        <!-- انتخاب نقش -->
+        <div class="mb-4">
+            <label asp-for="Role" class="form-label">نقش</label>
+            <select asp-for="Role" class="form-select">
+                @foreach (var role in Enum.GetValues(typeof(UserRole)).Cast<UserRole>())
+                {
+                    <option value="@role">@role.ToString()</option>
+                }
+            </select>
+            <span asp-validation-for="Role" class="text-danger"></span>
+        </div>
+
+        <!-- دکمه ذخیره -->
+        <button type="submit" class="btn btn-primary">ذخیره تغییرات</button>
+    </form>
+</div>
