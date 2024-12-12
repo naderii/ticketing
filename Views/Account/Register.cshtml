@@ -107,7 +107,55 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const registerForm = document.getElementById("registerForm");
+
+            // بررسی شماره تلفن
+            const phoneInput = document.getElementById("Phone");
+            phoneInput.addEventListener("input", function () {
+                this.value = this.value.replace(/[^0-9]/g, ""); // فقط عدد مجاز است
+                if (this.value.length > 12) {
+                    this.value = this.value.slice(0, 12); // محدود به 12 رقم
+                }
+            });
+
+            // بررسی نام و نام خانوادگی
+            const firstNameInput = document.getElementById("FirstName");
+            const lastNameInput = document.getElementById("LastName");
+
+            function validateTextOnly(inputField) {
+                inputField.addEventListener("input", function () {
+                    this.value = this.value.replace(/[^a-zA-Zآ-ی\s]/g, ""); // حذف کاراکترهای غیر از حروف و فاصله
+                });
+            }
+
+            validateTextOnly(firstNameInput);
+            validateTextOnly(lastNameInput);
+
+            // بررسی هنگام ارسال فرم
             registerForm.addEventListener("submit", function (e) {
+                const phoneValue = phoneInput.value.trim();
+                const firstNameValue = firstNameInput.value.trim();
+                const lastNameValue = lastNameInput.value.trim();
+
+                if (phoneValue.length > 12 || phoneValue.length === 0) {
+                    e.preventDefault();
+                    alert("شماره تلفن باید فقط عدد و حداکثر ۱۲ رقم باشد.");
+                    return false;
+                }
+
+                const nameRegex = /^[a-zA-Zآ-ی\s]+$/;
+
+                if (!nameRegex.test(firstNameValue)) {
+                    e.preventDefault();
+                    alert("فیلد نام فقط باید شامل حروف باشد.");
+                    return false;
+                }
+
+                if (!nameRegex.test(lastNameValue)) {
+                    e.preventDefault();
+                    alert("فیلد نام خانوادگی فقط باید شامل حروف باشد.");
+                    return false;
+                }
+
                 const password = document.getElementById("Password").value;
                 const confirmPassword = document.getElementById("ConfirmPassword").value;
 
