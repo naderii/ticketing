@@ -1,25 +1,20 @@
-﻿@model IEnumerable<TicketingSystem.Models.Ticket>
+﻿@model TicketListViewModel
 @using System.Security.Claims
-
 
 @{
     ViewData["Title"] = "لیست تیکت‌ها";
 }
-@foreach (var ticket in Model)
-{
-@*     <div>
-        @ticket.Title
-        @if (User.IsInRole("Admin") || User.IsInRole("Support") || ticket.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier))
-        {
-            <p>@ticket.Description</p>
-        }
-    </div> *@
-}
-
-
 
 <div class="container mt-5">
     <h2 class="text-center mb-4">لیست تیکت‌ها</h2>
+
+    <!-- فرم جستجو -->
+    <form method="get" class="mb-4">
+        <div class="d-flex justify-content-between">
+            <input type="text" name="searchQuery" value="@Model.SearchQuery" class="form-control" placeholder="جستجو..." />
+            <button type="submit" class="btn btn-primary ml-2">جستجو</button>
+        </div>
+    </form>
 
     <!-- دکمه ایجاد تیکت جدید -->
     <div class="d-flex justify-content-between mb-4">
@@ -32,15 +27,47 @@
             <table class="table table-striped table-hover">
                 <thead class="thead-dark">
                     <tr>
-                        <th>شماره</th>
-                        <th>عنوان</th>
-                        <th>اولویت</th>
-                        <th>تاریخ ایجاد</th>
+                        <th>
+                            <a href="@Url.Action("Index", "Tickets", new { sortBy = "Id", sortOrder = Model.SortBy == "Id" && Model.SortOrder == "asc" ? "desc" : "asc", searchQuery = Model.SearchQuery })">
+                                شماره
+                                @if (Model.SortBy == "Id")
+                                {
+                                    <span>@(Model.SortOrder == "asc" ? "↑" : "↓")</span>
+                                }
+                            </a>
+                        </th>
+                        <th>
+                            <a href="@Url.Action("Index", "Tickets", new { sortBy = "Title", sortOrder = Model.SortBy == "Title" && Model.SortOrder == "asc" ? "desc" : "asc", searchQuery = Model.SearchQuery })">
+                                عنوان
+                                @if (Model.SortBy == "Title")
+                                {
+                                    <span>@(Model.SortOrder == "asc" ? "↑" : "↓")</span>
+                                }
+                            </a>
+                        </th>
+                        <th>
+                            <a href="@Url.Action("Index", "Tickets", new { sortBy = "Priority", sortOrder = Model.SortBy == "Priority" && Model.SortOrder == "asc" ? "desc" : "asc", searchQuery = Model.SearchQuery })">
+                                اولویت
+                                @if (Model.SortBy == "Priority")
+                                {
+                                    <span>@(Model.SortOrder == "asc" ? "↑" : "↓")</span>
+                                }
+                            </a>
+                        </th>
+                        <th>
+                            <a href="@Url.Action("Index", "Tickets", new { sortBy = "CreatedAt", sortOrder = Model.SortBy == "CreatedAt" && Model.SortOrder == "asc" ? "desc" : "asc", searchQuery = Model.SearchQuery })">
+                                تاریخ ایجاد
+                                @if (Model.SortBy == "CreatedAt")
+                                {
+                                    <span>@(Model.SortOrder == "asc" ? "↑" : "↓")</span>
+                                }
+                            </a>
+                        </th>
                         <th>عملیات</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var ticket in Model)
+                    @foreach (var ticket in Model.Tickets)
                     {
                         <tr>
                             <td>@ticket.Id</td>
@@ -69,10 +96,24 @@
             </table>
         </div>
     </div>
-</div>
 
-@section Scripts {
-    <script>
-        // این کد برای اعمال رنگ‌بندی (badge) به اولویت‌ها است.
-    </script>
-}
+    <!-- صفحه‌بندی -->
+    <div class="d-flex justify-content-center mt-4">
+        <nav>
+            <ul class="pagination">
+                <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("Index", "Tickets", new { page = Model.CurrentPage - 1, sortBy = Model.SortBy, sortOrder = Model.SortOrder, searchQuery = Model.SearchQuery })">قبلی</a>
+                </li>
+                @for (var i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("Index", "Tickets", new { page = i, sortBy = Model.SortBy, sortOrder = Model.SortOrder, searchQuery = Model.SearchQuery })">@i</a>
+                    </li>
+                }
+                <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("Index", "Tickets", new { page = Model.CurrentPage + 1, sortBy = Model.SortBy, sortOrder = Model.SortOrder, searchQuery = Model.SearchQuery })">بعدی</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>

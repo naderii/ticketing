@@ -154,5 +154,6 @@ namespace TicketingSystem.Controllers
             var tickets = await _context.Tickets.ToListAsync();
             return View(tickets);
         }
+
     }
 }
