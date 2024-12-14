@@ -51,7 +51,7 @@
                 <div class="form-text text-danger">
                     <span asp-validation-for="Password"></span>
                 </div>
-                <small class="form-text text-muted">رمز عبور باید حداقل ۶ کاراکتر باشد.</small>
+                <small class="form-text text-muted">رمز عبور باید حداقل ۶ کاراکتر شامل حروف کوچک بزرگ عدد و کاراکتر باشد.</small>
             </div>
 
             <div class="col-md-6">
@@ -161,7 +161,7 @@
 
                 if (password.length < 6) {
                     e.preventDefault();
-                    alert("رمز عبور باید حداقل ۶ کاراکتر باشد.");
+                    alert("رمز عبور باید حداقل ۶ کاراکتر شامل حروف کوچک بزرگ عدد و کاراکتر باشد.");
                     return false;
                 }
 
