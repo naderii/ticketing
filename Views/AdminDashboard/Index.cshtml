@@ -1,0 +1,185 @@
+﻿@using TicketingSystem.ViewModels
+@model TicketingSystem.ViewModels.AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "داشبورد ادمین";
+}
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">وضعیت تیکت ها</h1>
+
+    <div class="row">
+        <!-- Total Tickets Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">تعداد کل تیکت‌ها</h5>
+                    <p class="card-text">@Model.TotalTickets</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Responses Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">تعداد کل پاسخ‌ها</h5>
+                    <p class="card-text">@Model.TotalResponses</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- High Priority Tickets Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <h5 class="card-title">تیکت‌های با اولویت بالا</h5>
+                    <p class="card-text">@Model.HighPriorityTickets</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Medium Priority Tickets Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card bg-warning text-dark">
+                <div class="card-body">
+                    <h5 class="card-title">تیکت‌های با اولویت متوسط</h5>
+                    <p class="card-text">@Model.MediumPriorityTickets</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Low Priority Tickets Card -->
+        <div class="col-md-4 mb-4">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">تیکت‌های با اولویت پایین</h5>
+                    <p class="card-text">@Model.LowPriorityTickets</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Priority Counts Table -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4 class="card-title">تعداد تیکت‌ها بر اساس اولویت</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>اولویت</th>
+                        <th>تعداد</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var priority in Model.PriorityCounts)
+                    {
+                        <tr>
+                            <td>@priority.Priority</td>
+                            <td>@priority.Count</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Status Counts Table -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4 class="card-title">تعداد تیکت‌ها بر اساس وضعیت</h4>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>وضعیت</th>
+                        <th>تعداد</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var status in Model.StatusCounts)
+                    {
+                        <tr>
+                            <td>@status.Status</td>
+                            <td>@status.Count</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pie Chart for Priority Counts -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4 class="card-title">نمودار دایره‌ای تیکت‌ها بر اساس اولویت</h4>
+        </div>
+        <div class="card-body">
+            <canvas id="priorityPieChart" width="350" height="350"></canvas>
+        </div>
+    </div>
+
+</div>
+
+<!-- Chart.js Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var ctx = document.getElementById('priorityPieChart').getContext('2d');
+    var priorityPieChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['High', 'Medium', 'Low'],
+            datasets: [{
+                label: 'تعداد تیکت‌ها',
+                data: [@Model.HighPriorityTickets, @Model.MediumPriorityTickets, @Model.LowPriorityTickets],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)', // High
+                    'rgba(54, 162, 235, 0.2)', // Medium
+                    'rgba(75, 192, 192, 0.2)'  // Low
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(75, 192, 192, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (tooltipItem) {
+                            return tooltipItem.label + ': ' + tooltipItem.raw + ' تیکت';
+                        }
+                    }
+                },
+                // Adding percentage labels inside the pie chart
+                datalabels: {
+                    formatter: function (value, context) {
+                        var sum = 0;
+                        context.chart.data.datasets[0].data.forEach(function (element) {
+                            sum += element;
+                        });
+                        var percentage = (value / sum * 100).toFixed(2) + "%";
+                        return percentage;
+                    },
+                    color: 'white',
+                    font: {
+                        weight: 'bold',
+                        size: 16
+                    }
+                }
+            }
+        }
+    });
+</script>

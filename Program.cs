@@ -79,6 +79,10 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+app.MapControllerRoute(
+    name: "admin",
+    pattern: "{controller=Admin}/{action=Dashboard}/{id?}");
+
 app.MapRazorPages(); // Optional: Map Razor Pages
 app.MapFallbackToController("Index", "Home"); // Optional: Fallback route
 
