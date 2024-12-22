@@ -63,6 +63,7 @@
                                 }
                             </a>
                         </th>
+                        <th>وضعیت</th>
                         <th>عملیات</th>
                     </tr>
                 </thead>
@@ -88,7 +89,28 @@
                             </td>
                             <td>@ticket.CreatedAt.ToShortDateString()</td>
                             <td>
+                                <!-- نمایش وضعیت تیکت با رنگ‌های مختلف -->
+                                @if (ticket.Status == "Closed")
+                                {
+                                    <span class="badge bg-success">بسته شده</span> <!-- رنگ سبز برای وضعیت بسته شده -->
+                                }
+                                else if (ticket.Status == "InProgress")
+                                {
+                                    <span class="badge bg-info">در حال انجام</span> <!-- رنگ آبی برای وضعیت در حال انجام -->
+                                }
+                                else if (ticket.Status == "Open")
+                                {
+                                    <span class="badge bg-warning">باز</span> <!-- رنگ زرد برای وضعیت باز -->
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">نامشخص</span> <!-- رنگ خاکی برای وضعیت نامشخص -->
+                                }
+                            </td>
+                            <td>
                                 <a href="@Url.Action("Details", "Tickets", new { id = ticket.Id })" class="btn btn-primary btn-sm">جزئیات</a>
+                                <a href="@Url.Action("Edit", "Tickets", new { id = ticket.Id })" class="btn btn-warning btn-sm">ویرایش</a>
+                                <a href="@Url.Action("Delete", "Tickets", new { id = ticket.Id })" class="btn btn-danger btn-sm">حذف</a>
                             </td>
                         </tr>
                     }

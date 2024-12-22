@@ -1,20 +1,32 @@
 ﻿using TicketingSystem.Data;
 using Microsoft.EntityFrameworkCore;
-using TicketingSystem.Services;
 
-public class TicketService : ITicketService
+namespace TicketingSystem.Services
 {
-    private readonly ApplicationDbContext _context;
-
-    public TicketService(ApplicationDbContext context)
+    public class TicketService : ITicketService
     {
-        _context = context;
-    }
+        private readonly ApplicationDbContext _context;
 
-    // تغییر سطح دسترسی به public
-    public async Task<int> GetUserTicketCount(string userId)
-    {
-        // فرض می‌کنیم که تیکت‌ها در جدولی به نام Tickets ذخیره می‌شوند
-        return await _context.Tickets.CountAsync(t => t.UserId == userId);
+        public TicketService(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<int> GetUserTicketCount(string userId)
+        {
+            return await _context.Tickets.CountAsync(t => t.UserId == userId);
+        }
+
+public async Task<bool> DeleteTicketAsync(int ticketId)
+        {
+            var ticket = await _context.Tickets.FindAsync(ticketId);
+            if (ticket != null)
+            {
+                _context.Tickets.Remove(ticket);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
     }
 }

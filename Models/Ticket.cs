@@ -11,6 +11,8 @@ namespace TicketingSystem.Models
     /// </summary>
     public class Ticket
     {
+        internal DateTime UpdatedAt;
+
         /// <summary>
         /// شناسه منحصر به فرد تیکت
         /// </summary>

@@ -9,18 +9,20 @@ using System.Linq;
 using System.Threading.Tasks;
 using System;
 using Microsoft.Data.SqlClient;
-using System.Globalization;
+using TicketingSystem.Services;
 
 namespace TicketingSystem.Controllers
 {
     public class TicketsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly ITicketService _ticketService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public TicketsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public TicketsController(ApplicationDbContext context, ITicketService ticketService, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _ticketService = ticketService;
             _userManager = userManager;
         }
 
@@ -183,5 +185,175 @@ namespace TicketingSystem.Controllers
             return View(viewModel);
         }
 
+        // اکشن برای نمایش تعداد تیکت‌های کاربر
+        [Authorize]
+        public async Task<IActionResult> UserTicketCount()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["ErrorMessage"] = "شما وارد سیستم نشده‌اید.";
+                return RedirectToAction("Login", "Account");
+            }
+
+            // دریافت تعداد تیکت‌های کاربر
+            var ticketCount = await _ticketService.GetUserTicketCount(userId);
+
+            // می‌توانید این مقدار را به ویو ارسال کنید یا در TempData ذخیره کنید
+            ViewData["TicketCount"] = ticketCount;
+
+            return View();
+        }
+
+        // اکشن حذف تیکت
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            // بررسی دسترسی کاربر
+            var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == id);
+            if (ticket == null)
+            {
+                TempData["ErrorMessage"] = "تیکت پیدا نشد.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userRoles = await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User));
+
+            // بررسی نقش‌ها: "Admin" و "Support" به همه تیکت‌ها دسترسی دارند
+            if (userRoles.Contains("Admin") || userRoles.Contains("Support") || ticket.UserId == userId)
+            {
+                var result = await _ticketService.DeleteTicketAsync(id);
+                if (result)
+                {
+                    TempData["SuccessMessage"] = "تیکت با موفقیت حذف شد.";
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "خطا در حذف تیکت.";
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "شما دسترسی برای حذف این تیکت را ندارید.";
+                return RedirectToAction(nameof(Index));
+            }
+        }
+        [Authorize]
+        public async Task<IActionResult> DeleteConfirm(int id)
+        {
+            var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == id);
+            if (ticket == null)
+            {
+                TempData["ErrorMessage"] = "تیکت پیدا نشد.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(ticket);
+        }
+
+        [Authorize]
+        public async Task<IActionResult> Edit(int id)
+        {
+            // واکشی تیکت از دیتابیس
+            var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == id);
+            if (ticket == null)
+            {
+                TempData["ErrorMessage"] = "تیکت پیدا نشد.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // بررسی دسترسی کاربر
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userRoles = await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User));
+
+            // بررسی نقش‌ها: "Admin" و "Support" به همه تیکت‌ها دسترسی دارند
+            if (userRoles.Contains("Admin") || userRoles.Contains("Support") || ticket.UserId == userId)
+            {
+                return View(ticket);
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "شما دسترسی به این تیکت ندارید.";
+                return RedirectToAction(nameof(Index));
+            }
+        }
+        // Enum برای وضعیت تیکت‌ها
+        public enum TicketStatus
+        {
+            Open,
+            Closed,
+            InProgress
+        }
+
+        // اکشن Edit (POST) برای ذخیره تغییرات تیکت
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Ticket model)
+        {
+            // بررسی وارد شدن کاربر
+            if (!User.Identity!.IsAuthenticated)
+            {
+                TempData["ErrorMessage"] = "لطفاً وارد سیستم شوید.";
+                return RedirectToAction("Login", "Account");
+            }
+
+            // واکشی تیکت از دیتابیس
+            var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == id);
+            if (ticket == null)
+            {
+                TempData["ErrorMessage"] = "تیکت پیدا نشد.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // بررسی دسترسی کاربر
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userRoles = await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User));
+
+            // بررسی نقش‌ها: "Admin" و "Support" به همه تیکت‌ها دسترسی دارند
+            if (userRoles.Contains("Admin") || userRoles.Contains("Support") || ticket.UserId == userId)
+            {
+                // بررسی وضعیت تیکت وارد شده
+                if (!Enum.IsDefined(typeof(TicketStatus), model.Status))
+                {
+                    TempData["ErrorMessage"] = "وضعیت وارد شده معتبر نیست.";
+                    return View(ticket);
+                }
+
+                // به‌روزرسانی مقادیر تیکت
+                ticket.Title = model.Title;
+                ticket.Description = model.Description;
+                ticket.Priority = model.Priority ?? "Low";  // استفاده از مقدار پیش‌فرض در صورت عدم ارسال
+                ticket.Status = model.Status ?? TicketStatus.Open.ToString();  // استفاده از مقدار پیش‌فرض در صورت عدم ارسال
+                ticket.UpdatedAt = DateTime.Now;
+
+                try
+                {
+                    // ذخیره تغییرات در دیتابیس
+                    _context.Tickets.Update(ticket);
+                    await _context.SaveChangesAsync();
+
+                    TempData["SuccessMessage"] = "تیکت با موفقیت ویرایش شد.";
+                    return RedirectToAction(nameof(Index)); // هدایت به صفحه لیست تیکت‌ها
+                }
+                catch (Exception ex)
+                {
+                    // افزودن جزئیات خطا در صورت بروز مشکل
+                    TempData["ErrorMessage"] = "خطا در ویرایش تیکت: " + ex.Message;
+                    return View(ticket);
+                }
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "شما دسترسی به ویرایش این تیکت را ندارید.";
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
     }
+
 }
+

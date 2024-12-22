@@ -4,61 +4,77 @@
     ViewData["Title"] = "جزئیات تیکت";
 }
 
-<h1>جزئیات تیکت</h1>
+<h1 class="mb-4">جزئیات تیکت</h1>
 
-<dl class="row">
-    <dt class="col-sm-2">عنوان</dt>
-    <dd class="col-sm-10">@Model.Title</dd>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">@Model.Title</h3>
+        <span class="badge @GetTicketStatusClass(Model.Status)">@Model.Status</span>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-2">عنوان</dt>
+            <dd class="col-sm-10">@Model.Title</dd>
 
-    <dt class="col-sm-2">توضیحات</dt>
-    <dd class="col-sm-10">@Model.Description</dd>
+            <dt class="col-sm-2">توضیحات</dt>
+            <dd class="col-sm-10">@Model.Description</dd>
 
-    <dt class="col-sm-2">اولویت</dt>
-    <dd class="col-sm-10">@Model.Priority</dd>
+            <dt class="col-sm-2">اولویت</dt>
+            <dd class="col-sm-10">@Model.Priority</dd>
 
-    <dt class="col-sm-2">تاریخ ایجاد</dt>
-    <dd class="col-sm-10">@Model.CreatedAt.ToShortDateString()</dd>
-</dl>
+            <dt class="col-sm-2">تاریخ ایجاد</dt>
+            <dd class="col-sm-10">@Model.CreatedAt.ToShortDateString()</dd>
+        </dl>
 
-<h2>پاسخ‌ها</h2>
+        <div class="mt-4">
+            <h2>پاسخ‌ها</h2>
 
-@if (Model.Responses != null && Model.Responses.Any())
-{
-    <ul class="list-group">
-        @foreach (var response in Model.Responses)
+            @if (Model.Responses != null && Model.Responses.Any())
+            {
+                <ul class="list-group">
+                    @foreach (var response in Model.Responses)
+                    {
+                        <li class="list-group-item">
+                            <p>@response.ResponseText</p>
+                            <small>
+                                توسط:
+                                @if (ViewBag.UserNames != null && ViewBag.UserNames.ContainsKey(response.UserId))
+                                {
+                                    @ViewBag.UserNames[response.UserId]
+                                }
+                                else
+                                {
+                                    @response.UserId
+                                }
+                                <br />
+                                در تاریخ: @response.CreatedAt.ToString("yyyy/MM/dd HH:mm")
+                            </small>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>هنوز پاسخی ثبت نشده است.</p>
+            }
+        </div>
+
+        @if (User.Identity.IsAuthenticated)
         {
-            <li class="list-group-item">
-                <p>@response.ResponseText</p>
-                <small>
-                    توسط:
-                    @if (ViewBag.UserNames != null && ViewBag.UserNames.ContainsKey(response.UserId))
-                    {
-                        @ViewBag.UserNames[response.UserId]
-                        // نمایش نام و نام خانوادگی کاربر
-                    }
-                    else
-                    {
-                        @response.UserId
-                        // در صورتی که نام کاربر پیدا نشد، UserId را نمایش می‌دهیم
-                    }
-                    در تاریخ: @response.CreatedAt.ToString("yyyy/MM/dd HH:mm")
-                </small>
-            </li>
+            <a asp-action="Create" asp-controller="TicketResponses" asp-route-ticketId="@Model.Id" class="btn btn-primary mt-3">افزودن پاسخ</a>
         }
-    </ul>
-}
-else
-{
-    <p>هنوز پاسخی ثبت نشده است.</p>
-}
+        else
+        {
+            <p>برای افزودن پاسخ باید وارد حساب کاربری خود شوید.</p>
+        }
 
-@if (User.Identity.IsAuthenticated)
-{
-    <a asp-action="Create" asp-controller="TicketResponses" asp-route-ticketId="@Model.Id" class="btn btn-primary">افزودن پاسخ</a>
-}
-else
-{
-    <p>برای افزودن پاسخ باید وارد حساب کاربری خود شوید.</p>
-}
+        <a href="@Url.Action("Index", "Tickets")" class="btn btn-secondary mt-3">بازگشت به لیست تیکت‌ها</a>
+    </div>
+</div>
 
-<a href="@Url.Action("Index", "Tickets")" class="btn btn-secondary">بازگشت به لیست تیکت‌ها</a>
+@functions {
+    public string GetTicketStatusClass(string status)
+    {
+        return status == "Closed" ? "badge-danger" : "badge-success";
+    }
+}
