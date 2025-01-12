@@ -117,7 +117,7 @@
 
 ابتدا مخزن پروژه را از گیت‌لب کلون کنید:
 ```sh
-git clone http://gitlab-3.kashan.ir/60460/ticketing.git
+git https://github.com/naderii/ticketing.git
 cd ticketing
 ```
 
