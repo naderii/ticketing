@@ -32,8 +32,8 @@ namespace TicketingSystem.Data
             }
 
             // اطلاعات کاربر Admin
-            var adminEmail = "nader@kashan.ir";
-            var adminPassword = "Na12345@";
+            var adminEmail = "";
+            var adminPassword = "";
 
             // بررسی وجود کاربر Admin
             var adminUser = await userManager.FindByEmailAsync(adminEmail).ConfigureAwait(false);
@@ -44,8 +44,8 @@ namespace TicketingSystem.Data
                 {
                     UserName = adminEmail,
                     Email = adminEmail,
-                    FirstName = "Nader",
-                    LastName = "Kashan"
+                    FirstName = "",
+                    LastName = ""
                 };
 
                 var createAdminResult = await userManager.CreateAsync(adminUser, adminPassword).ConfigureAwait(false);
